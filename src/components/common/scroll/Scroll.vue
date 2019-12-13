@@ -1,5 +1,5 @@
 <template>
-	<div class="wrapper" ref="wrapper">
+	<div class="wrapper" ref="wrappers">
 		<div class="content">
 			<slot></slot>
 		</div>
@@ -22,11 +22,13 @@
 		},
 		data(){
 			return {
-				scroll:null
+				scroll:{}
 			}
 		},
 		mounted(){
-			this.scroll = new BScroll(this.$refs.wrapper,{
+			
+			
+			this.scroll = new BScroll(this.$refs.wrappers,{
 				// tap:true,
 				click: true,
 				probeType:this.probeType,
@@ -50,20 +52,21 @@
 			}
 		},
 		methods:{
+			
 			// scrollTo 有三个参数，x值，y值，时间（毫秒）
 			scrollTo(x,y,time=1000){
 				// 特殊写法，当this.scroll不为空值时才会执行下一步操作
-				this.scroll && this.scroll.scrollTo(x,y,time)
-			},
-			finishPullUp(){
-				this.scroll.finishPullUp()
+				this.scroll && this.scroll.scrollTo && this.scroll.scrollTo(x,y,time)
 			},
 			refresh(){
-				this.scroll && this.scroll.refresh()
+				this.scroll && this.scroll.refresh && this.scroll.refresh()
 				
 			},
 			finishPullUp(){
-				this.scroll && this.scroll.finishPullUp()
+				this.scroll && this.scroll.finishPullUp && this.scroll.finishPullUp()
+			},
+			getCurrentY(){
+				return this.scroll.y ? this.scroll.y : 0
 			}
 		}
 	}

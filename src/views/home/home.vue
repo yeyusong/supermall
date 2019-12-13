@@ -5,10 +5,11 @@
 		 @tabClick='tabclick' 
 		 ref="tabControl1" class="tabnewcontrol"
 		 v-show="isTabFixed"></tab-control>
-		<scroll class="content" ref="scroll" 
+		<scroll class="contents" ref="scroll" 
 		:probe-type="3" @scroll="contentscroll"
 		:pull-up-load="true" @pullingUp="loadMore">
-			<home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"></home-swiper>
+			<home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"  
+			v-if="banners.length"></home-swiper>
 			<recommend-view :recommends="recommends"></recommend-view>
 			<feature></feature>
 			<tab-control :titles="['流行','新款','精选']"
@@ -65,21 +66,22 @@
 				}
 			}
 		},
+		
 		computed:{
 			showGoods(){
 				return this.goods[this.currentType].list
 			}
 		},
-		// destroyed(){
+		
+		activated(){
+			this.$refs.scroll.refresh()
+			this.$refs.scroll.scrollTo(0,this.saveY,0)
 			
-		// },
-		// activated(){
-		// 	this.$refs.scroll.scrollTo(0,this.saveY,0)
-		// 	this.$refs.scroll.refresh()
-		// },
-		// deactivated(){
-		// 	this.saveY=this.$refs.scroll.getScrollY()
-		// },
+		},
+		deactivated(){
+			this.saveY = this.$refs.scroll.getCurrentY()
+			
+		},
 		created(){
 			//请求多个数据(来源：methods)
 			this.getHomeMultiData()
@@ -127,7 +129,7 @@
 					this.goods[type].list.push(...res.data.list)
 					this.goods[type].page += 1
 					
-					// 完成下拉加载更多
+					// 完成上拉加载更多
 					this.$refs.scroll.finishPullUp()
 				})
 			},
@@ -138,14 +140,14 @@
 				this.isTabFixed = (-pos.y)>this.tabOffsetTop
 			},
 			
-			// 下拉加载更多的方法
+			// 上拉加载更多的方法
 			loadMore(){
 				this.getHomeGoods(this.currentType)
 			},
 			
-			// getScrollY(){
-			// 	return this.scroll ? this.scroll.y : 0
-			// }
+			getScrollY(){
+				return this.scroll ? this.scroll.y : 0
+			}
 		},
 		mounted(){
 			// 图片加载完成的事件监听
@@ -175,7 +177,7 @@
 		z-index: 9;
 	}
 	
-	.content{
+	.contents{
 		
 		overflow: hidden;
 		position: absolute;
@@ -188,9 +190,5 @@
 		position: relative;
 		z-index: 9;
 	}
-	/* .content{
-		height: calc(100%-93px);
-		overflow: hidden;
-		margin-top: 44px;
-	} */
+	
 </style>

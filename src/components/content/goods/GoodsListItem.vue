@@ -1,7 +1,7 @@
 <template>
 	<div class="goods-list-item" @click="itemclick">
 			<a>
-			      <img :src="goodsItem.show.img" alt="" @load="imageLoad" >
+			      <img :src="showImage" alt="" @load="imageLoad" >
 			 </a>
 			<div class="goods-info">
 				 <p>{{goodsItem.title}}</p>
@@ -21,6 +21,11 @@
 				}
 			}
 		},
+		computed:{
+			showImage(){
+				return this.goodsItem.image || this.goodsItem.show.img
+			}
+		},
 		methods:{
 			imageLoad(){
 				this.$bus.$emit('itemimageLoad')
@@ -33,7 +38,7 @@
 	}
 </script>
 
-<style>
+<style scoped="scoped">
 	 .goods-list-item {
 		padding: 2px;
 	    padding-bottom: 40px;
