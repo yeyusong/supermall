@@ -7,7 +7,8 @@
 		 v-show="isTabFixed"></tab-control>
 		<scroll class="contents" ref="scroll" 
 		:probe-type="3" @scroll="contentscroll"
-		:pull-up-load="true" @pullingUp="loadMore">
+		:pull-up-load="true" @pullingUp="loadMore"
+		>
 			<home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"  
 			v-if="banners.length"></home-swiper>
 			<recommend-view :recommends="recommends"></recommend-view>
@@ -35,6 +36,7 @@
 	
 	import {getHomeMultiData,getHomeGoods} from "../../network/home.js"
 	import {debounce} from '../../common/utils.js'
+	import {itemListenerMixin} from '../../common/mixin.js'
 	
 	export default {
 		name:"home",
@@ -48,6 +50,7 @@
 			Scroll,
 			BackTop
 		},
+		mixins:[itemListenerMixin],
 		data(){
 			return {
 				banners:[],
@@ -57,7 +60,6 @@
 				tabOffsetTop:0,
 				isTabFixed:false,
 				saveY:0,
-				
 				isShowBackTop:false,
 				goods:{
 					'pop':{page:0,list:[]},
@@ -80,7 +82,8 @@
 		},
 		deactivated(){
 			this.saveY = this.$refs.scroll.getCurrentY()
-			
+			// 离开时取消全局事件的监听
+			this.$bus.$off('itemImgLoad',this.itemImgListener)
 		},
 		created(){
 			//请求多个数据(来源：methods)
@@ -92,6 +95,7 @@
 			
 		},
 		methods:{   
+			
 			swiperImageLoad(){
 				// 获取tabControl的offsetTop
 				this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
@@ -129,8 +133,9 @@
 					this.goods[type].list.push(...res.data.list)
 					this.goods[type].page += 1
 					
-					// 完成上拉加载更多
+					// 完成上拉加载更多并刷新
 					this.$refs.scroll.finishPullUp()
+					this.$refs.scroll.refresh()
 				})
 			},
 			// 特定时候出现回到顶部图标
@@ -150,11 +155,6 @@
 			}
 		},
 		mounted(){
-			// 图片加载完成的事件监听
-			const refresh = debounce(this.$refs.scroll.refresh,50)
-			this.$bus.$on('itemimageLoad',()=>{
-				refresh()
-			})
 			
 		}
 	}
@@ -188,7 +188,7 @@
 	}
 	.tabnewcontrol{
 		position: relative;
-		z-index: 9;
+		z-index: 99;
 	}
 	
 </style>

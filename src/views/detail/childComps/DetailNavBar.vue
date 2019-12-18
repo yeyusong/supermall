@@ -32,6 +32,7 @@
 		methods:{
 			titleclick(index){
 				this.currentIndex = index
+				this.$emit('titleclick',index)
 			},
 			backclick(){
 				this.$router.back()

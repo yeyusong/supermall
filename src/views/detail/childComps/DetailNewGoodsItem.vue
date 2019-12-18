@@ -28,7 +28,7 @@
 		},
 		methods:{
 			imageLoad(){
-				this.$bus.$emit('itemimageLoad')
+				this.$emit('itemimageLoad')
 				
 			},
 			itemclick(){

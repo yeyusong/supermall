@@ -1,5 +1,5 @@
 // 防抖函数，减轻服务器压力
-export function debounce(func,delay)
+export function debounce(func,delay=50)
 			{
 				let timer = null
 				return function(...args){

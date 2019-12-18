@@ -60,7 +60,7 @@
 			},
 			refresh(){
 				this.scroll && this.scroll.refresh && this.scroll.refresh()
-				
+				// console.log('数据刷新')
 			},
 			finishPullUp(){
 				this.scroll && this.scroll.finishPullUp && this.scroll.finishPullUp()
