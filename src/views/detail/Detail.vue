@@ -18,6 +18,7 @@
 			</scroll>
 			<back-top v-show="isShowBackTop" @click.native="backClick" class="backtop"></back-top>
 			<detail-bottom-bar @addCart="addtoCart"></detail-bottom-bar>
+			
 	</div>
 </template>
 
@@ -35,10 +36,13 @@
 	import Scroll from '../../components/common/scroll/Scroll.vue'
 	import GoodsList from '../../components/content/goods/GoodsList.vue'
 	import BackTop from '../../components/content/backTop/backTop.vue'
+
 	
 	import {getDetail,goods,shop,GoodsParam,getRecommend} from '../../network/detail.js'
 	import {debounce} from '../../common/utils.js'
 	import {itemListenerMixin} from '../../common/mixin.js'
+	
+	import { mapActions } from 'vuex'
 	
 	export default{
 		name:'Detail',
@@ -82,10 +86,12 @@
 			this.iid = this.$route.params.iid
 			
 			getDetail(this.iid).then(res=>{
+				// console.log(res)
 				const data = res.result
 				// 2.获取详情页的轮播图
 				this.topImages = data.itemInfo.topImages
 				
+				 this.goods = new goods(data.itemInfo, data.columns)
 				// 4.创建店铺信息对象
 				this.shop = new shop(data.shopInfo)
 				//5.获取商品详细信息
@@ -123,7 +129,7 @@
 			this.$bus.$off('itemImgLoad',this.itemImgListener)
 		},
 		methods:{
-			
+			...mapActions(['addCart']),
 			// 添加到购物车的方法
 			addtoCart(){
 				// 获取商品信息
@@ -134,7 +140,16 @@
 				product.price = this.goods.realPrice
 				product.iid = this.iid
 				// 添加到购物车
-				this.$store.dispatch('addCart',product)
+				// this.$store.commit('addCart',product)
+				
+				//第一种方法 
+				// this.$store.dispatch('addCart',product).then(res=>{
+				// console.log(res)
+				// })
+				// 第二种方法
+				this.addCart(product).then(res=>{
+					this.$toast.show(res)
+				})
 			},
 			// 回到顶部的方法
 			backClick(){
@@ -168,7 +183,7 @@
 	}
 </script>
 
-<style>
+<style scoped="scoped">
 	#details{
 		
 		background-color: #fff;
@@ -189,5 +204,5 @@
 		
 		padding-bottom: 15px;
 	}
-	 
+	
 </style>
