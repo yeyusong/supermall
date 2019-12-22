@@ -18,6 +18,12 @@
 	import {mapGetters} from 'vuex'
 	
 	export default{
+		props:{
+			judges:{
+				type:Number,
+				default:0
+			}
+		},
 		components:{
 			CheckButton
 		},
@@ -42,6 +48,15 @@
 					}
 				}
 				return true
+			},
+			judgecart(){
+				if(this.checkLength === 0){
+					// 0:未选择
+					return 0
+				}else if(this.checkLength !== 0){
+					//  1:有选择
+					return 1
+				}
 			}
 		},
 		methods:{
@@ -53,10 +68,12 @@
 				}
 			},
 			calcclick(){
-				if(!this.isSelectAll){
-					this.$toast.show('请选择购买的商品',2000)
-				}else{
+				if(this.judgecart === 0){
+					this.$toast.show('未选择商品',2000)
+				}else if(this.judgecart === 1){
 					this.$toast.show('亲，余额不足',2000)
+				}else{
+					this.$toast.show('未知错误',2000)
 				}
 			}
 		}
